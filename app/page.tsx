@@ -1,75 +1,56 @@
-// app/page.tsx
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
+
+import galleries from "../content/galleries/galleries.json";
+
+type GalleryIndexItem = {
+  slug: string;
+  title: string;
+  visibility: "public" | "private";
+};
 
 export default function HomePage() {
+  const list = (galleries as GalleryIndexItem[]).filter((g) => g.visibility === "public");
+
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        background: "#0f1011",
-        color: "#e9e9e9",
-      }}
-    >
-      <header
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "baseline",
-          padding: "18px 22px 8px 22px",
-          maxWidth: 1400,
-          margin: "0 auto",
-        }}
-      >
-        <div style={{ fontSize: 14, letterSpacing: 0.6 }}>Peter Staddon</div>
+    <main className="min-h-screen bg-neutral-950 text-neutral-100">
+      <section className="mx-auto max-w-6xl px-6 pt-12 pb-10">
+        <div className="grid gap-10 md:grid-cols-2 md:items-center">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">Peter Staddon</h1>
+            <p className="mt-3 text-sm text-neutral-400">
+              A static exhibition of landscape and macro work. Prints available by request.
+            </p>
 
-        <nav style={{ display: "flex", gap: 18, fontSize: 13 }}>
-          <Link href="/landscapes" style={{ color: "inherit", textDecoration: "none" }}>
-            Landscapes
-          </Link>
-          <Link href="/macro" style={{ color: "inherit", textDecoration: "none" }}>
-            Macro
-          </Link>
-          <Link href="/about" style={{ color: "inherit", textDecoration: "none" }}>
-            About
-          </Link>
-          <Link href="/contact" style={{ color: "inherit", textDecoration: "none" }}>
-            Contact
-          </Link>
-        </nav>
-      </header>
+            <div className="mt-7 flex flex-wrap gap-2">
+              {list.map((g) => (
+                <Link
+                  key={g.slug}
+                  href={`/galleries/${g.slug}`}
+                  className="rounded-md border border-neutral-800 bg-neutral-950 px-3 py-2 text-sm text-neutral-200 hover:bg-neutral-900"
+                >
+                  {g.title}
+                </Link>
+              ))}
+            </div>
+          </div>
 
-      <section
-        style={{
-          maxWidth: 1600,
-          margin: "0 auto",
-          padding: "18px 22px 28px 22px",
-        }}
-      >
-        {/* Mat hugs image (no forced viewport height) */}
-        <div
-          style={{
-            background: "#f0efea", // warm off-white mat
-            padding: 5, // thin border
-            width: "min(1500px, 100%)",
-            margin: "0 auto",
-          }}
-        >
-          <Image
-            src="/landing/statement.jpg"
-            alt=""
-            width={6858}
-            height={3064}
-            priority
-            sizes="(max-width: 1500px) 100vw, 1500px"
-            style={{
-              display: "block",
-              width: "100%",
-              height: "auto",
-            }}
-          />
+          <div className="relative overflow-hidden rounded-lg border border-neutral-800 bg-neutral-900">
+            <Image
+              src="/landing/statement.jpg"
+              alt="Statement"
+              width={1600}
+              height={1000}
+              className="h-auto w-full object-cover"
+              priority
+            />
+          </div>
         </div>
       </section>
+
+      <footer className="mx-auto max-w-6xl px-6 pb-10 text-xs text-neutral-500">
+        © {new Date().getFullYear()} Peter Staddon
+      </footer>
     </main>
   );
 }

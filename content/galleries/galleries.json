@@ -1,0 +1,9 @@
+[
+  { "slug": "landscapes", "title": "Landscapes", "visibility": "public" },
+  { "slug": "macro", "title": "Macro", "visibility": "public" },
+  { "slug": "coast", "title": "Coast", "visibility": "public" },
+
+  { "slug": "studies", "title": "Studies", "visibility": "private" },
+  { "slug": "monochrome", "title": "Monochrome", "visibility": "private" },
+  { "slug": "drafts", "title": "Drafts", "visibility": "private" }
+]
