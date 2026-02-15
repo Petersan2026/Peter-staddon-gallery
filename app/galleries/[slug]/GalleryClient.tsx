@@ -6,6 +6,7 @@ import { notFound, useParams } from "next/navigation";
 
 import galleries from "../../../content/galleries/galleries.json";
 import landscapes from "../../../content/galleries/landscapes.json";
+import private1 from "../../../content/galleries/private-1.json";
 
 type GalleryIndexItem = {
   slug: string;
@@ -27,6 +28,7 @@ type WorkResolved = {
 
 const WORKS_BY_SLUG: Record<string, Work[]> = {
   landscapes: landscapes as Work[],
+  "private-1": private1 as Work[],
 };
 
 function clampIndex(n: number, len: number) {
@@ -65,11 +67,10 @@ export default function GalleryClient() {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [isFading, setIsFading] = useState(false);
-
   const [isInspectOpen, setIsInspectOpen] = useState(false);
-  const [isPrintOpen, setIsPrintOpen] = useState(false);
 
-  const active = worksResolved[clampIndex(activeIndex, worksResolved.length)] ?? null;
+  const active =
+    worksResolved[clampIndex(activeIndex, worksResolved.length)] ?? null;
 
   useEffect(() => {
     setActiveIndex((prev) => clampIndex(prev, worksResolved.length));
@@ -77,10 +78,8 @@ export default function GalleryClient() {
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        setIsInspectOpen(false);
-        setIsPrintOpen(false);
-      }
+      if (e.key === "Escape") setIsInspectOpen(false);
+
       if (e.key === "ArrowLeft") {
         setActiveIndex((prev) => clampIndex(prev - 1, worksResolved.length));
       }
@@ -114,7 +113,9 @@ export default function GalleryClient() {
     );
   }
 
-  const labelText = active.location?.trim() ? active.location.trim() : gallery.title;
+  const labelText = active.location?.trim()
+    ? active.location.trim()
+    : gallery.title;
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
@@ -123,13 +124,6 @@ export default function GalleryClient() {
           <h1 className="text-xl font-semibold tracking-tight">{gallery.title}</h1>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setIsPrintOpen(true)}
-              className="rounded-md border border-neutral-800 bg-neutral-950 px-3 py-1.5 text-sm text-neutral-200 hover:bg-neutral-900"
-            >
-              Print options
-            </button>
             <button
               type="button"
               onClick={() => setIsInspectOpen(true)}
@@ -145,7 +139,10 @@ export default function GalleryClient() {
         <div className="relative overflow-hidden rounded-lg bg-neutral-900">
           <div className="relative flex items-center justify-center px-6 py-10 md:px-10 md:py-14">
             <div className="relative w-full" style={{ maxWidth: 1400 }}>
-              <div className="relative w-full overflow-hidden rounded-md bg-neutral-950" style={{ aspectRatio: "3 / 2" }}>
+              <div
+                className="relative w-full overflow-hidden rounded-md bg-neutral-950"
+                style={{ aspectRatio: "3 / 2" }}
+              >
                 <Image
                   src={active.displaySrc}
                   alt={labelText}
@@ -153,6 +150,7 @@ export default function GalleryClient() {
                   sizes="(max-width: 768px) 100vw, 1200px"
                   className="object-contain"
                   priority
+                  unoptimized
                 />
 
                 <div
@@ -209,7 +207,14 @@ export default function GalleryClient() {
                         outlineOffset: 2,
                       }}
                     >
-                      <Image src={w.displaySrc} alt={w.location || w.slug} fill sizes="96px" className="object-cover" />
+                      <Image
+                        src={w.displaySrc}
+                        alt={w.location || w.slug}
+                        fill
+                        sizes="96px"
+                        className="object-cover"
+                        unoptimized
+                      />
                     </div>
                   </button>
                 );
@@ -220,8 +225,48 @@ export default function GalleryClient() {
       </section>
 
       <footer className="mx-auto max-w-6xl px-6 py-10 text-xs text-neutral-500">
-        Use arrow keys to navigate. ESC closes overlays.
+        Use arrow keys to navigate. ESC closes inspect.
       </footer>
+
+      {isInspectOpen && (
+        <div className="fixed inset-0 z-50" role="dialog" aria-modal="true">
+          {/* Backdrop */}
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/70"
+            aria-label="Close inspect"
+            onClick={() => setIsInspectOpen(false)}
+          />
+
+          {/* Modal */}
+          <div className="relative mx-auto flex h-full max-w-6xl items-center px-6">
+            <div className="relative w-full overflow-hidden rounded-lg bg-neutral-950 shadow-2xl">
+              <div className="flex items-center justify-between border-b border-neutral-800 px-4 py-3">
+                <div className="text-sm text-neutral-200">{labelText}</div>
+                <button
+                  type="button"
+                  onClick={() => setIsInspectOpen(false)}
+                  className="rounded-md border border-neutral-800 bg-neutral-950 px-3 py-1.5 text-sm text-neutral-200 hover:bg-neutral-900"
+                >
+                  Close
+                </button>
+              </div>
+
+              <div className="relative w-full" style={{ aspectRatio: "3 / 2" }}>
+                <Image
+                  src={active.inspectSrc}
+                  alt={`Inspect: ${labelText}`}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 1400px"
+                  className="object-contain"
+                  unoptimized
+                  priority
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

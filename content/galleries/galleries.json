@@ -5,5 +5,8 @@
 
   { "slug": "studies", "title": "Studies", "visibility": "private" },
   { "slug": "monochrome", "title": "Monochrome", "visibility": "private" },
-  { "slug": "drafts", "title": "Drafts", "visibility": "private" }
+  { "slug": "drafts", "title": "Drafts", "visibility": "private" },
+
+  { "slug": "private-1", "title": "Private 1", "visibility": "private" }
 ]
+
